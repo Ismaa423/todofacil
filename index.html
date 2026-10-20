@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111827">
+  <meta name="description" content="TodoFácil: herramientas online gratuitas, rápidas y sencillas.">
+  <title>TodoFácil | Herramientas gratuitas</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #172033;
+    }
+    header {
+      background: #111827;
+      color: white;
+      padding: 22px 18px;
+    }
+    .wrap { max-width: 1000px; margin: auto; }
+    header strong { font-size: 25px; }
+    .hero { padding: 45px 18px 25px; text-align: center; }
+    .hero h1 { font-size: clamp(30px, 6vw, 46px); margin-bottom: 12px; }
+    .hero p { color: #64748b; line-height: 1.6; }
+    input, button {
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+    input {
+      width: 100%;
+      border: 1px solid #d5dbe6;
+      margin: 12px 0;
+    }
+    main { padding: 15px 18px 45px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e4e8f0;
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 4px 15px #17203308;
+    }
+    .card h2 { font-size: 19px; }
+    .card p { color: #64748b; line-height: 1.5; }
+    button {
+      border: 0;
+      background: #4f46e5;
+      color: white;
+      cursor: pointer;
+    }
+    .card button { width: 100%; }
+    .result { font-weight: bold; overflow-wrap: anywhere; }
+    footer { text-align: center; padding: 25px; color: #64748b; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap"><strong>TodoFácil</strong></div>
+  </header>
+
+  <section class="hero wrap">
+    <h1>Herramientas útiles, sin complicaciones</h1>
+    <p>Soluciones gratuitas para tus tareas del día a día.</p>
+    <input id="search" type="search" placeholder="Buscar una herramienta..." aria-label="Buscar herramientas">
+  </section>
+
+  <main class="wrap">
+    <div class="grid" id="tools">
+      <section class="card" data-name="palabras caracteres texto contador">
+        <h2>Contador de palabras</h2>
+        <p>Cuenta palabras y caracteres de cualquier texto.</p>
+        <textarea id="words" rows="4" placeholder="Escribe o pega tu texto" style="width:100%;padding:12px;border:1px solid #d5dbe6;border-radius:10px"></textarea>
+        <p class="result" id="wordResult">0 palabras · 0 caracteres</p>
+      </section>
+
+      <section class="card" data-name="porcentaje calculadora">
+        <h2>Calculadora de porcentajes</h2>
+        <p>Calcula un porcentaje de cualquier cantidad.</p>
+        <input id="amount" type="number" placeholder="Cantidad">
+        <input id="percent" type="number" placeholder="Porcentaje">
+        <button id="calc">Calcular</button>
+        <p class="result" id="calcResult" aria-live="polite"></p>
+      </section>
+
+      <section class="card" data-name="descuento precio ahorro">
+        <h2>Calculadora de descuentos</h2>
+        <p>Descubre el precio final de una oferta.</p>
+        <input id="price" type="number" min="0" placeholder="Precio original">
+        <input id="discount" type="number" min="0" max="100" placeholder="Descuento (%)">
+        <button id="discountCalc">Calcular precio</button>
+        <p class="result" id="discountResult" aria-live="polite"></p>
+      </section>
+
+      <section class="card" data-name="contraseña segura generador">
+        <h2>Generador de contraseñas</h2>
+        <p>Crea una contraseña aleatoria en tu dispositivo.</p>
+        <button id="password">Generar contraseña</button>
+        <p class="result" id="passwordResult" aria-live="polite"></p>
+      </section>
+    </div>
+    <p id="empty" hidden>No se han encontrado herramientas.</p>
+  </main>
+
+  <footer>TodoFácil · Herramientas gratuitas</footer>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    $('words').addEventListener('input', () => {
+      const text = $('words').value.trim();
+      const count = text ? text.split(/\s+/).length : 0;
+      $('wordResult').textContent =
+        `${count} palabras · ${$('words').value.length} caracteres`;
+    });
+
+    $('calc').addEventListener('click', () => {
+      const a = Number($('amount').value);
+      const p = Number($('percent').value);
+      if (!$('amount').value || !$('percent').value) {
+        $('calcResult').textContent = 'Introduce la cantidad y el porcentaje.';
+        return;
+      }
+      $('calcResult').textContent =
+        (a * p / 100).toLocaleString('es-ES', {maximumFractionDigits: 4});
+    });
+
+    $('discountCalc').addEventListener('click', () => {
+      const price = Number($('price').value);
+      const d = Number($('discount').value);
+      if ($('price').value === '' || $('discount').value === '' ||
+          price < 0 || d < 0 || d > 100) {
+        $('discountResult').textContent = 'Introduce un precio válido y un descuento entre 0 y 100.';
+        return;
+      }
+      $('discountResult').textContent =
+        `Precio final: ${(price * (1 - d / 100)).toLocaleString('es-ES', {style:'currency',currency:'EUR'})}`;
+    });
+
+    $('password').addEventListener('click', () => {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*';
+      const values = new Uint32Array(20);
+      crypto.getRandomValues(values);
+      $('passwordResult').textContent =
+        Array.from(values, n => chars[n % chars.length]).join('');
+    });
+
+    $('search').addEventListener('input', () => {
+      const query = $('search').value.toLowerCase().trim();
+      let visible = 0;
+      document.querySelectorAll('.card').forEach(card => {
+        const show = card.dataset.name.includes(query) ||
+          card.innerText.toLowerCase().includes(query);
+        card.hidden = !show;
+        if (show) visible++;
+      });
+      $('empty').hidden = visible > 0;
+    });
+  </script>
+</body>
+</html>
